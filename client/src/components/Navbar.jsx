@@ -270,41 +270,8 @@ export default function Navbar({ title, subtitle, onSearch, searchValue = '' }) 
             </div>
           )}
         </div>
-
-        {/* Direct 1-Click Logout Quick Button */}
-        <button
-          type="button"
-          onClick={handleLogout}
-          title="Sign out of TaskFlow"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '7px 12px',
-            borderRadius: '8px',
-            backgroundColor: '#ffffff',
-            border: '1px solid #e2e8f0',
-            color: '#64748b',
-            fontSize: '0.8rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.15s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#fef2f2';
-            e.currentTarget.style.borderColor = '#fecaca';
-            e.currentTarget.style.color = '#ef4444';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#ffffff';
-            e.currentTarget.style.borderColor = '#e2e8f0';
-            e.currentTarget.style.color = '#64748b';
-          }}
-        >
-          <LogOut size={14} />
-          <span>Logout</span>
-        </button>
       </div>
     </header>
+
   );
 }
