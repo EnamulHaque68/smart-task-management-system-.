@@ -1,0 +1,107 @@
+### ==============================================================================
+### Bright Mind Ltd - Smart Task & Project Management System
+### Phase 4: Authentication & Authorization Test Suite (VS Code REST Client / Postman)
+### Base URL: http://localhost:5000/api/auth
+### ==============================================================================
+
+@baseUrl = http://localhost:5000/api/auth
+@demoToken = {{loginSuccess.response.body.data.token}}
+
+### 1. Test Server Root & Health Check
+GET http://localhost:5000/api/health
+Content-Type: application/json
+
+### ----------------------------------------------------------------------------
+### REGISTRATION TESTS
+### ----------------------------------------------------------------------------
+
+### 2. Register New User (Expect: 201 Created with safe user object and JWT token)
+# @name registerSuccess
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "name": "Tanvir Hasan",
+  "email": "tanvir.hasan@brightmind.com",
+  "password": "Password123!"
+}
+
+### 3. Register Duplicate Email (Expect: 409 Conflict)
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "name": "Tanvir Hasan Clone",
+  "email": "tanvir.hasan@brightmind.com",
+  "password": "AnotherPassword123!"
+}
+
+### 4. Register Validation Error - Short Password (Expect: 400 Bad Request with field errors)
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "name": "Invalid User",
+  "email": "invalid@brightmind.com",
+  "password": "123"
+}
+
+### 5. Register Validation Error - Invalid Email (Expect: 400 Bad Request)
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "name": "Invalid Email User",
+  "email": "not-an-email",
+  "password": "Password123!"
+}
+
+### ----------------------------------------------------------------------------
+### LOGIN TESTS
+### ----------------------------------------------------------------------------
+
+### 6. Login Success with Valid Seed User (Expect: 200 OK with token)
+# @name loginSuccess
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "demo@brightmind.com",
+  "password": "password123"
+}
+
+### 7. Login with Invalid Password (Expect: 401 Unauthorized)
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "demo@brightmind.com",
+  "password": "wrong_password_here"
+}
+
+### 8. Login with Non-Existent Email (Expect: 401 Unauthorized)
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "nonexistent@brightmind.com",
+  "password": "password123"
+}
+
+### ----------------------------------------------------------------------------
+### PROTECTED ROUTE TESTS (/api/auth/me)
+### ----------------------------------------------------------------------------
+
+### 9. Get Authenticated User Profile with Valid Bearer Token (Expect: 200 OK)
+GET {{baseUrl}}/me
+Authorization: Bearer {{demoToken}}
+Content-Type: application/json
+
+### 10. Access Protected Endpoint Without Token (Expect: 401 Unauthorized)
+GET {{baseUrl}}/me
+Content-Type: application/json
+
+### 11. Access Protected Endpoint With Malformed / Invalid Token (Expect: 401 Unauthorized)
+GET {{baseUrl}}/me
+Authorization: Bearer invalid_jwt_token_string_12345
+Content-Type: application/json

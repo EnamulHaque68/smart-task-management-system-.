@@ -1,0 +1,87 @@
+### ==============================================================================
+### Bright Mind Ltd - Smart Task & Project Management System
+### Phase 7: Dashboard Summary & Analytics Test Suite (VS Code REST Client / Postman)
+### Base URL: http://localhost:5000/api
+### ==============================================================================
+
+@baseUrl = http://localhost:5000/api
+
+### 1. Login as User 1 (Alex Morgan - Project Owner with Data)
+# @name loginUser1
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "demo@brightmind.com",
+  "password": "password123"
+}
+
+@tokenUser1 = {{loginUser1.response.body.data.token}}
+
+### 2. Login as User 5 (Tanvir Hasan - Fresh User with Empty State)
+# @name loginUser5
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "tanvir.hasan@brightmind.com",
+  "password": "Password123!"
+}
+
+@tokenUser5 = {{loginUser5.response.body.data.token}}
+
+### ----------------------------------------------------------------------------
+### DASHBOARD METRICS TESTS (GET /api/dashboard)
+### ----------------------------------------------------------------------------
+
+### 3. Get Dashboard for Populated User (Expect: 200 OK with accurate counts & metrics)
+GET {{baseUrl}}/dashboard
+Authorization: Bearer {{tokenUser1}}
+
+### 4. Get Dashboard for Empty-State User (Expect: 200 OK with 0s and empty arrays, no errors)
+GET {{baseUrl}}/dashboard
+Authorization: Bearer {{tokenUser5}}
+
+### 5. Access Dashboard Without Token (Expect: 401 Unauthorized)
+GET {{baseUrl}}/dashboard
+
+### ----------------------------------------------------------------------------
+### DYNAMIC METRIC VERIFICATION: CREATE OVERDUE TASK & OBSERVE CHANGE
+### ----------------------------------------------------------------------------
+
+### 6. Create Overdue Task (due_date in the past)
+# @name createOverdueTask
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{tokenUser1}}
+Content-Type: application/json
+
+{
+  "projectId": 1,
+  "title": "Resolve Security Vulnerability CVE-2026",
+  "status": "To Do",
+  "priority": "High",
+  "due_date": "2026-01-15"
+}
+
+@overdueTaskId = {{createOverdueTask.response.body.data.task.id}}
+
+### 7. Re-check Dashboard (overdueTasks and pendingTasks should increase by 1)
+GET {{baseUrl}}/dashboard
+Authorization: Bearer {{tokenUser1}}
+
+### 8. Mark Overdue Task as Completed
+PUT {{baseUrl}}/tasks/{{overdueTaskId}}
+Authorization: Bearer {{tokenUser1}}
+Content-Type: application/json
+
+{
+  "status": "Completed"
+}
+
+### 9. Re-check Dashboard (overdueTasks should decrease, completedTasks increase)
+GET {{baseUrl}}/dashboard
+Authorization: Bearer {{tokenUser1}}
+
+### 10. Clean up temporary test task
+DELETE {{baseUrl}}/tasks/{{overdueTaskId}}
+Authorization: Bearer {{tokenUser1}}

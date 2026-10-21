@@ -1,0 +1,176 @@
+### ==============================================================================
+### Bright Mind Ltd - Smart Task & Project Management System
+### Phase 6: Task Management & Filter Test Suite (VS Code REST Client / Postman)
+### Base URL: http://localhost:5000/api
+### ==============================================================================
+
+@baseUrl = http://localhost:5000/api
+
+### 1. Login as User 1 (Alex Morgan - Project Owner)
+# @name loginUser1
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "demo@brightmind.com",
+  "password": "password123"
+}
+
+@tokenUser1 = {{loginUser1.response.body.data.token}}
+
+### 2. Login as User 5 (Tanvir Hasan - Non-Owner)
+# @name loginUser5
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "tanvir.hasan@brightmind.com",
+  "password": "Password123!"
+}
+
+@tokenUser5 = {{loginUser5.response.body.data.token}}
+
+### ----------------------------------------------------------------------------
+### CREATE TASK TESTS (POST /api/tasks)
+### ----------------------------------------------------------------------------
+
+### 3. Create Task Success (Expect: 201 Created)
+# @name createTaskSuccess
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{tokenUser1}}
+Content-Type: application/json
+
+{
+  "projectId": 1,
+  "title": "Set up CI/CD Pipeline on GitHub Actions",
+  "description": "Configure linting, automated testing, and zero-downtime deployment workflows.",
+  "status": "To Do",
+  "priority": "High",
+  "assigned_to": 2,
+  "due_date": "2026-03-20",
+  "checklist": [
+    { "id": 1, "text": "Create workflow yml file", "done": false },
+    { "id": 2, "text": "Configure repository secrets", "done": false }
+  ]
+}
+
+@newTaskId = {{createTaskSuccess.response.body.data.task.id}}
+
+### 4. Create Task Validation Error - Missing Title & Project ID (Expect: 400 Bad Request)
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{tokenUser1}}
+Content-Type: application/json
+
+{
+  "status": "InvalidStatus",
+  "priority": "Urgent"
+}
+
+### 5. Unauthorized Creation: User 5 attempts to create task in User 1's project (Expect: 403 Forbidden)
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{tokenUser5}}
+Content-Type: application/json
+
+{
+  "projectId": 1,
+  "title": "Unauthorized Task Injection"
+}
+
+### ----------------------------------------------------------------------------
+### LIST & FILTER TASKS TESTS (GET /api/tasks)
+### ----------------------------------------------------------------------------
+
+### 6. Get All Tasks for Authenticated User (Expect: 200 OK)
+GET {{baseUrl}}/tasks
+Authorization: Bearer {{tokenUser1}}
+
+### 7. Filter Tasks by Project ID (Expect: 200 OK filtered to Project 1)
+GET {{baseUrl}}/tasks?projectId=1
+Authorization: Bearer {{tokenUser1}}
+
+### 8. Filter Tasks by Status (Expect: 200 OK filtered to 'In Progress')
+GET {{baseUrl}}/tasks?status=In Progress
+Authorization: Bearer {{tokenUser1}}
+
+### 9. Filter Tasks by Priority (Expect: 200 OK filtered to 'High')
+GET {{baseUrl}}/tasks?priority=High
+Authorization: Bearer {{tokenUser1}}
+
+### 10. Filter Tasks by Assignee ID (Expect: 200 OK filtered to Sarah Wilson id: 2)
+GET {{baseUrl}}/tasks?assigneeId=2
+Authorization: Bearer {{tokenUser1}}
+
+### 11. Combined Filters: Project + Status + Priority (Expect: 200 OK matching all 3)
+GET {{baseUrl}}/tasks?projectId=1&status=In Progress&priority=High
+Authorization: Bearer {{tokenUser1}}
+
+### 12. Combined Filters resulting in Empty Results (Expect: 200 OK with empty array)
+GET {{baseUrl}}/tasks?projectId=1&status=Completed&priority=Low
+Authorization: Bearer {{tokenUser1}}
+
+### 13. Search Tasks by Keyword (Expect: 200 OK)
+GET {{baseUrl}}/tasks?search=Security
+Authorization: Bearer {{tokenUser1}}
+
+### ----------------------------------------------------------------------------
+### GET SINGLE TASK BY ID (GET /api/tasks/:id)
+### ----------------------------------------------------------------------------
+
+### 14. Get Single Task Success (Expect: 200 OK with details)
+GET {{baseUrl}}/tasks/1
+Authorization: Bearer {{tokenUser1}}
+
+### 15. Unauthorized Read: User 5 attempts to view User 1's task (Expect: 403 Forbidden)
+GET {{baseUrl}}/tasks/1
+Authorization: Bearer {{tokenUser5}}
+
+### 16. Get Non-Existent Task (Expect: 404 Not Found)
+GET {{baseUrl}}/tasks/99999
+Authorization: Bearer {{tokenUser1}}
+
+### ----------------------------------------------------------------------------
+### UPDATE TASK (PUT /api/tasks/:id)
+### ----------------------------------------------------------------------------
+
+### 17. Update Task by Owner (Expect: 200 OK - move to Completed)
+PUT {{baseUrl}}/tasks/{{newTaskId}}
+Authorization: Bearer {{tokenUser1}}
+Content-Type: application/json
+
+{
+  "title": "Set up CI/CD Pipeline on GitHub Actions (v2)",
+  "status": "Completed",
+  "priority": "High",
+  "checklist": [
+    { "id": 1, "text": "Create workflow yml file", "done": true },
+    { "id": 2, "text": "Configure repository secrets", "done": true }
+  ]
+}
+
+### 18. Unauthorized Update: User 5 attempts to update User 1's task (Expect: 403 Forbidden)
+PUT {{baseUrl}}/tasks/1
+Authorization: Bearer {{tokenUser5}}
+Content-Type: application/json
+
+{
+  "title": "Hacked Task Title"
+}
+
+### ----------------------------------------------------------------------------
+### DELETE TASK (DELETE /api/tasks/:id)
+### ----------------------------------------------------------------------------
+
+### 19. Unauthorized Deletion: User 5 attempts to delete User 1's task (Expect: 403 Forbidden)
+DELETE {{baseUrl}}/tasks/1
+Authorization: Bearer {{tokenUser5}}
+
+### 20. Delete Task by Owner (Expect: 200 OK)
+DELETE {{baseUrl}}/tasks/{{newTaskId}}
+Authorization: Bearer {{tokenUser1}}
+
+### 21. Verify 404 after Deletion
+GET {{baseUrl}}/tasks/{{newTaskId}}
+Authorization: Bearer {{tokenUser1}}
+
+### 22. Access Task Endpoints Without Token (Expect: 401 Unauthorized)
+GET {{baseUrl}}/tasks

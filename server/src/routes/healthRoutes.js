@@ -1,0 +1,9 @@
+import { Router } from 'express';
+import { getHealth } from '../controllers/healthController.js';
+
+const router = Router();
+
+// GET /api/health - System and database health status
+router.get('/', getHealth);
+
+export default router;

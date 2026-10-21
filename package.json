@@ -1,0 +1,21 @@
+{
+  "name": "bright-mind-task-manager",
+  "version": "1.0.0",
+  "description": "Bright Mind Ltd - Smart Task & Project Management System",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "client": "npm.cmd --prefix client run dev",
+    "server": "npm.cmd --prefix server run dev"
+  },
+  "keywords": [
+    "bright-mind",
+    "task-manager",
+    "react",
+    "nodejs",
+    "express",
+    "postgresql"
+  ],
+  "author": "Bright Mind Ltd",
+  "license": "MIT"
+}

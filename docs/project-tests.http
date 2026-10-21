@@ -1,0 +1,154 @@
+### ==============================================================================
+### Bright Mind Ltd - Smart Task & Project Management System
+### Phase 5: Project Management Test Suite (VS Code REST Client / Postman)
+### Base URL: http://localhost:5000/api
+### ==============================================================================
+
+@baseUrl = http://localhost:5000/api
+
+### 1. Login as User 1 (Alex Morgan - Project Owner)
+# @name loginUser1
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "demo@brightmind.com",
+  "password": "password123"
+}
+
+### Store User 1 Token
+@tokenUser1 = {{loginUser1.response.body.data.token}}
+
+### 2. Login as User 5 (Tanvir Hasan - Different User)
+# @name loginUser5
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "tanvir.hasan@brightmind.com",
+  "password": "Password123!"
+}
+
+### Store User 5 Token
+@tokenUser5 = {{loginUser5.response.body.data.token}}
+
+### ----------------------------------------------------------------------------
+### CREATE PROJECT TESTS (POST /api/projects)
+### ----------------------------------------------------------------------------
+
+### 3. Create Project Success (Expect: 201 Created)
+# @name createProjectSuccess
+POST {{baseUrl}}/projects
+Authorization: Bearer {{tokenUser1}}
+Content-Type: application/json
+
+{
+  "title": "Enterprise Cloud Migration",
+  "description": "Migrate core infrastructure to AWS multi-region cluster with automated backups.",
+  "status": "In Progress",
+  "priority": "High",
+  "due_date": "2026-06-30"
+}
+
+@newProjectId = {{createProjectSuccess.response.body.data.project.id}}
+
+### 4. Create Project Validation Error - Short Title (Expect: 400 Bad Request)
+POST {{baseUrl}}/projects
+Authorization: Bearer {{tokenUser1}}
+Content-Type: application/json
+
+{
+  "title": "AB",
+  "description": "Too short title",
+  "status": "In Progress"
+}
+
+### 5. Create Project Validation Error - Invalid Status & Priority (Expect: 400 Bad Request)
+POST {{baseUrl}}/projects
+Authorization: Bearer {{tokenUser1}}
+Content-Type: application/json
+
+{
+  "title": "AI Analytics Engine",
+  "status": "InvalidStatus",
+  "priority": "Urgent"
+}
+
+### ----------------------------------------------------------------------------
+### LIST & FILTER PROJECTS TESTS (GET /api/projects)
+### ----------------------------------------------------------------------------
+
+### 6. Get All Projects for Authenticated User (Expect: 200 OK with progress metrics)
+GET {{baseUrl}}/projects
+Authorization: Bearer {{tokenUser1}}
+
+### 7. Filter Projects by Status (Expect: 200 OK filtered)
+GET {{baseUrl}}/projects?status=In Progress
+Authorization: Bearer {{tokenUser1}}
+
+### 8. Filter Projects by Priority (Expect: 200 OK filtered)
+GET {{baseUrl}}/projects?priority=High
+Authorization: Bearer {{tokenUser1}}
+
+### 9. Search Projects by Keyword (Expect: 200 OK search results)
+GET {{baseUrl}}/projects?search=Migration
+Authorization: Bearer {{tokenUser1}}
+
+### 10. Attempt to Access Projects Without Token (Expect: 401 Unauthorized)
+GET {{baseUrl}}/projects
+
+### ----------------------------------------------------------------------------
+### GET SINGLE PROJECT BY ID (GET /api/projects/:id)
+### ----------------------------------------------------------------------------
+
+### 11. Get Single Project Success by Owner (Expect: 200 OK with tasks list)
+GET {{baseUrl}}/projects/1
+Authorization: Bearer {{tokenUser1}}
+
+### 12. Unauthorized Access: User 5 attempts to read User 1's project (Expect: 403 Forbidden)
+GET {{baseUrl}}/projects/1
+Authorization: Bearer {{tokenUser5}}
+
+### 13. Get Non-Existent Project (Expect: 404 Not Found)
+GET {{baseUrl}}/projects/99999
+Authorization: Bearer {{tokenUser1}}
+
+### 14. Invalid ID format (Expect: 400 Bad Request)
+GET {{baseUrl}}/projects/abc
+Authorization: Bearer {{tokenUser1}}
+
+### ----------------------------------------------------------------------------
+### UPDATE PROJECT (PUT /api/projects/:id)
+### ----------------------------------------------------------------------------
+
+### 15. Update Project by Owner (Expect: 200 OK)
+PUT {{baseUrl}}/projects/{{newProjectId}}
+Authorization: Bearer {{tokenUser1}}
+Content-Type: application/json
+
+{
+  "title": "Enterprise Cloud Migration v2",
+  "status": "Completed",
+  "priority": "High"
+}
+
+### 16. Unauthorized Update: User 5 attempts to update User 1's project (Expect: 403 Forbidden)
+PUT {{baseUrl}}/projects/1
+Authorization: Bearer {{tokenUser5}}
+Content-Type: application/json
+
+{
+  "title": "Hacked Title"
+}
+
+### ----------------------------------------------------------------------------
+### DELETE PROJECT (DELETE /api/projects/:id)
+### ----------------------------------------------------------------------------
+
+### 17. Unauthorized Deletion: User 5 attempts to delete User 1's project (Expect: 403 Forbidden)
+DELETE {{baseUrl}}/projects/1
+Authorization: Bearer {{tokenUser5}}
+
+### 18. Delete Project by Owner (Expect: 200 OK with deletedTasksCount)
+DELETE {{baseUrl}}/projects/{{newProjectId}}
+Authorization: Bearer {{tokenUser1}}
