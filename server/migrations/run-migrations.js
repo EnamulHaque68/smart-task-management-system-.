@@ -66,7 +66,8 @@ async function runMigrations() {
     const migrationFiles = [
       '001_create_users_table.sql',
       '002_create_projects_table.sql',
-      '003_create_tasks_table.sql'
+      '003_create_tasks_table.sql',
+      '004_create_messages_table.sql'
     ];
 
     for (const file of migrationFiles) {

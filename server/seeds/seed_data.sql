@@ -38,7 +38,16 @@ VALUES
   (7, 1, 'Channel Partners Licensing', 'Finalize licensing agreements for reseller network and partner distribution.', 'Completed', 'Medium', 3, 'Mike Fisher', '#10b981', '[{"id": 1, "text": "Prepare NFR licenses", "done": true}, {"id": 2, "text": "Document process", "done": true}, {"id": 3, "text": "Consult with partners", "done": true}, {"id": 4, "text": "Distribute license keys", "done": true}]'::jsonb, NULL, '2026-02-15')
 ON CONFLICT (id) DO NOTHING;
 
+-- 4. Insert Sample Messages for Team Communication
+INSERT INTO messages (id, user_id, sender_name, sender_avatar, text, created_at)
+VALUES
+  (1, 2, 'Sarah Wilson', '#f59e0b', 'Hey team, I have prepared the initial marketing collateral for review!', NOW() - INTERVAL '2 hours'),
+  (2, 3, 'Mike Fisher', '#10b981', 'Just completed the trade show floor plan checklist item.', NOW() - INTERVAL '1 hour'),
+  (3, 4, 'John Doe', '#0d9488', 'Security review is 50% completed on the CRM sync pipeline.', NOW() - INTERVAL '30 minutes')
+ON CONFLICT (id) DO NOTHING;
+
 -- Synchronize sequence IDs with max values
 SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) FROM users));
 SELECT setval('projects_id_seq', (SELECT COALESCE(MAX(id), 1) FROM projects));
 SELECT setval('tasks_id_seq', (SELECT COALESCE(MAX(id), 1) FROM tasks));
+SELECT setval('messages_id_seq', (SELECT COALESCE(MAX(id), 1) FROM messages));

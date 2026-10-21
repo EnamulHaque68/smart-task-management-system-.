@@ -9,6 +9,7 @@ import authRoutes from './routes/authRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import messageRoutes from './routes/messageRoutes.js';
 import { notFoundHandler, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -45,6 +46,7 @@ app.get('/', (req, res) => {
       projects: '/api/projects',
       tasks: '/api/tasks',
       dashboard: '/api/dashboard',
+      messages: '/api/messages',
     },
   });
 });
@@ -55,6 +57,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/messages', messageRoutes);
 
 // 404 Not Found Handler
 app.use(notFoundHandler);
