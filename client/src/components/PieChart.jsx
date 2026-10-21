@@ -1,33 +1,45 @@
 import React, { useState } from 'react';
-import { PieChart as PieIcon, Info } from 'lucide-react';
+import { PieChart as PieIcon, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function PieChart({ data, title = 'Task Distribution' }) {
   const [activeSegment, setActiveSegment] = useState(null);
   const [viewMode, setViewMode] = useState('status'); // 'status' or 'priority'
 
-  // Prepare slices based on viewMode
-  let slices = [];
-  if (viewMode === 'status' && data?.tasksSummary?.byStatus) {
-    const s = data.tasksSummary.byStatus;
-    slices = [
-      { id: 'completed', label: 'Completed', value: s.completed || 0, color: '#10b981', lightColor: '#ecfdf5' },
-      { id: 'in_progress', label: 'In Progress', value: s.inProgress || 0, color: '#f59e0b', lightColor: '#fffbeb' },
-      { id: 'todo', label: 'To Do', value: s.toDo || 0, color: '#2563eb', lightColor: '#eff6ff' },
-    ];
-  } else if (viewMode === 'priority' && data?.tasksSummary?.byPriority) {
-    const p = data.tasksSummary.byPriority;
-    slices = [
-      { id: 'high', label: 'High Priority', value: p.high || 0, color: '#ef4444', lightColor: '#fef2f2' },
-      { id: 'medium', label: 'Medium Priority', value: p.medium || 0, color: '#f59e0b', lightColor: '#fffbeb' },
-      { id: 'low', label: 'Low Priority', value: p.low || 0, color: '#10b981', lightColor: '#ecfdf5' },
+  // Extract raw slices from data
+  let rawSlices = [];
+  if (viewMode === 'status') {
+    const s = data?.tasksSummary?.byStatus || {};
+    rawSlices = [
+      { id: 'completed', label: 'Completed', value: Number(s.completed || 0), color: '#10b981', lightColor: '#ecfdf5' },
+      { id: 'in_progress', label: 'In Progress', value: Number(s.inProgress || 0), color: '#f59e0b', lightColor: '#fffbeb' },
+      { id: 'todo', label: 'To Do', value: Number(s.toDo || 0), color: '#2563eb', lightColor: '#eff6ff' },
     ];
   } else {
-    slices = [
-      { id: 'completed', label: 'Completed', value: 2, color: '#10b981', lightColor: '#ecfdf5' },
-      { id: 'in_progress', label: 'In Progress', value: 4, color: '#f59e0b', lightColor: '#fffbeb' },
-      { id: 'todo', label: 'To Do', value: 1, color: '#2563eb', lightColor: '#eff6ff' },
+    const p = data?.tasksSummary?.byPriority || {};
+    rawSlices = [
+      { id: 'high', label: 'High Priority', value: Number(p.high || 0), color: '#ef4444', lightColor: '#fef2f2' },
+      { id: 'medium', label: 'Medium Priority', value: Number(p.medium || 0), color: '#f59e0b', lightColor: '#fffbeb' },
+      { id: 'low', label: 'Low Priority', value: Number(p.low || 0), color: '#10b981', lightColor: '#ecfdf5' },
     ];
   }
+
+  const realTotal = rawSlices.reduce((acc, curr) => acc + curr.value, 0);
+
+  // If realTotal === 0, use safe default seed preview so chart is ALWAYS visual and never an empty void
+  const hasRealData = realTotal > 0;
+  const slices = hasRealData
+    ? rawSlices
+    : (viewMode === 'status'
+        ? [
+            { id: 'completed', label: 'Completed', value: 2, color: '#10b981', lightColor: '#ecfdf5' },
+            { id: 'in_progress', label: 'In Progress', value: 4, color: '#f59e0b', lightColor: '#fffbeb' },
+            { id: 'todo', label: 'To Do', value: 1, color: '#2563eb', lightColor: '#eff6ff' },
+          ]
+        : [
+            { id: 'high', label: 'High Priority', value: 3, color: '#ef4444', lightColor: '#fef2f2' },
+            { id: 'medium', label: 'Medium Priority', value: 3, color: '#f59e0b', lightColor: '#fffbeb' },
+            { id: 'low', label: 'Low Priority', value: 1, color: '#10b981', lightColor: '#ecfdf5' },
+          ]);
 
   const totalValue = slices.reduce((acc, curr) => acc + curr.value, 0) || 1;
 
@@ -35,8 +47,8 @@ export default function PieChart({ data, title = 'Task Distribution' }) {
   const size = 260;
   const cx = size / 2;
   const cy = size / 2;
-  const outerRadius = 100;
-  const innerRadius = 62;
+  const outerRadius = 98;
+  const innerRadius = 60;
 
   // Compute SVG Paths for each slice
   let currentAngle = -Math.PI / 2; // Start at 12 o'clock
@@ -48,17 +60,43 @@ export default function PieChart({ data, title = 'Task Distribution' }) {
     const endAngle = currentAngle + sweepAngle;
     currentAngle += sweepAngle;
 
-    // Handle full 100% circle edge-case
-    const isFull = sweepAngle >= 2 * Math.PI - 0.001;
-    const effectiveEnd = isFull ? startAngle + 2 * Math.PI - 0.0001 : endAngle;
+    // Handle 0% slice
+    if (slice.value === 0 || percentage === 0) {
+      return {
+        ...slice,
+        percentage: '0%',
+        pathData: '',
+        sweepAngle: 0,
+      };
+    }
+
+    // Handle 100% full circle donut
+    if (percentage >= 0.999) {
+      const fullPath = [
+        `M ${cx} ${cy - outerRadius}`,
+        `A ${outerRadius} ${outerRadius} 0 1 1 ${cx} ${cy + outerRadius}`,
+        `A ${outerRadius} ${outerRadius} 0 1 1 ${cx} ${cy - outerRadius}`,
+        `M ${cx} ${cy - innerRadius}`,
+        `A ${innerRadius} ${innerRadius} 0 1 0 ${cx} ${cy + innerRadius}`,
+        `A ${innerRadius} ${innerRadius} 0 1 0 ${cx} ${cy - innerRadius}`,
+        'Z',
+      ].join(' ');
+
+      return {
+        ...slice,
+        percentage: '100%',
+        pathData: fullPath,
+        sweepAngle,
+      };
+    }
 
     const x1 = cx + outerRadius * Math.cos(startAngle);
     const y1 = cy + outerRadius * Math.sin(startAngle);
-    const x2 = cx + outerRadius * Math.cos(effectiveEnd);
-    const y2 = cy + outerRadius * Math.sin(effectiveEnd);
+    const x2 = cx + outerRadius * Math.cos(endAngle);
+    const y2 = cy + outerRadius * Math.sin(endAngle);
 
-    const x3 = cx + innerRadius * Math.cos(effectiveEnd);
-    const y3 = cy + innerRadius * Math.sin(effectiveEnd);
+    const x3 = cx + innerRadius * Math.cos(endAngle);
+    const y3 = cy + innerRadius * Math.sin(endAngle);
     const x4 = cx + innerRadius * Math.cos(startAngle);
     const y4 = cy + innerRadius * Math.sin(startAngle);
 
@@ -120,9 +158,23 @@ export default function PieChart({ data, title = 'Task Distribution' }) {
             <PieIcon size={18} />
           </div>
           <div>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
-              Pie Chart
-            </h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                Pie Chart
+              </h3>
+              {!hasRealData && (
+                <span style={{
+                  fontSize: '0.65rem',
+                  fontWeight: '700',
+                  color: '#2563eb',
+                  backgroundColor: '#eff6ff',
+                  padding: '1px 6px',
+                  borderRadius: '9999px',
+                }}>
+                  Workspace Preview
+                </span>
+              )}
+            </div>
             <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
               Category proportions & breakdown
             </span>
@@ -199,12 +251,25 @@ export default function PieChart({ data, title = 'Task Distribution' }) {
           >
             <defs>
               <filter id="pieShadow" x="-10%" y="-10%" width="120%" height="120%">
-                <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.1" />
+                <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.12" />
               </filter>
             </defs>
 
+            {/* Base guide circle */}
+            <circle
+              cx={cx}
+              cy={cy}
+              r={(outerRadius + innerRadius) / 2}
+              fill="none"
+              stroke="#f1f5f9"
+              strokeWidth={outerRadius - innerRadius}
+            />
+
+            {/* Arcs */}
             {arcs.map((arc) => {
+              if (!arc.pathData) return null;
               const isHovered = activeSegment === arc.id;
+
               return (
                 <path
                   key={arc.id}
@@ -217,7 +282,7 @@ export default function PieChart({ data, title = 'Task Distribution' }) {
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     transformOrigin: `${cx}px ${cy}px`,
                     transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-                    filter: isHovered ? 'drop-shadow(0 6px 10px rgba(0,0,0,0.18))' : 'none',
+                    filter: isHovered ? 'drop-shadow(0 6px 12px rgba(0,0,0,0.2))' : 'none',
                     opacity: activeSegment && !isHovered ? 0.65 : 1,
                   }}
                   onMouseEnter={() => setActiveSegment(arc.id)}
@@ -273,7 +338,7 @@ export default function PieChart({ data, title = 'Task Distribution' }) {
           display: 'flex',
           flexDirection: 'column',
           gap: '8px',
-          minWidth: '150px',
+          minWidth: '160px',
         }}>
           {arcs.map((arc) => {
             const isHovered = activeSegment === arc.id;

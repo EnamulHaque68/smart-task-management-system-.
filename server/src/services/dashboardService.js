@@ -2,6 +2,11 @@ import { query } from '../config/db.js';
 
 // Get aggregated dashboard metrics and analytics for authenticated user
 export const getDashboardMetrics = async (userId) => {
+  // Check if user owns personal projects; if not, fall back to organization projects (user_id = 1)
+  const countRes = await query('SELECT COUNT(*)::int AS cnt FROM projects WHERE user_id = $1', [userId]);
+  const hasOwnProjects = (countRes.rows[0]?.cnt || 0) > 0;
+  const targetUserId = hasOwnProjects ? userId : 1;
+
   // 1. Projects Statistics Query
   const projectsSql = `
     SELECT 
@@ -83,12 +88,12 @@ export const getDashboardMetrics = async (userId) => {
     LIMIT 5;
   `;
 
-  // Execute all queries in parallel with parameterized userId
+  // Execute all queries in parallel with parameterized targetUserId
   const [projectsRes, tasksRes, recentProjectsRes, pendingTasksRes] = await Promise.all([
-    query(projectsSql, [userId]),
-    query(tasksSql, [userId]),
-    query(recentProjectsSql, [userId]),
-    query(pendingTasksSql, [userId]),
+    query(projectsSql, [targetUserId]),
+    query(tasksSql, [targetUserId]),
+    query(recentProjectsSql, [targetUserId]),
+    query(pendingTasksSql, [targetUserId]),
   ]);
 
   const pStats = projectsRes.rows[0];
