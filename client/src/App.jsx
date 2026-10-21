@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth.jsx';
+import { SidebarProvider } from './context/SidebarContext.jsx';
 
 // Layouts
 import MainLayout from './layouts/MainLayout.jsx';
@@ -74,43 +75,45 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Routes>
-          {/* Public Auth Routes wrapped in AuthLayout */}
-          <Route
-            element={
-              <PublicRoute>
-                <AuthLayout />
-              </PublicRoute>
-            }
-          >
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Route>
+        <SidebarProvider>
+          <Routes>
+            {/* Public Auth Routes wrapped in AuthLayout */}
+            <Route
+              element={
+                <PublicRoute>
+                  <AuthLayout />
+                </PublicRoute>
+              }
+            >
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Route>
 
-          {/* Protected Application Routes inside MainLayout */}
-          <Route
-            element={
-              <ProtectedRoute>
-                <MainLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/tasks" element={<Tasks />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/team" element={<TeamMembers />} />
-            <Route path="/calendar" element={<CalendarView />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/support" element={<Support />} />
-          </Route>
+            {/* Protected Application Routes inside MainLayout */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <MainLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/team" element={<TeamMembers />} />
+              <Route path="/calendar" element={<CalendarView />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/support" element={<Support />} />
+            </Route>
 
-          {/* Fallback Route: Redirect to dashboard or login */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
+            {/* Fallback Route: Redirect to dashboard or login */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </SidebarProvider>
       </BrowserRouter>
     </AuthProvider>
   );

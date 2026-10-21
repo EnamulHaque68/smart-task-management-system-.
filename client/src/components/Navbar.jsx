@@ -19,13 +19,16 @@ import {
   Info,
   Clock,
   Sparkles,
+  Menu,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth.jsx';
+import { useSidebar } from '../context/SidebarContext.jsx';
 import { getTasksApi } from '../api/tasks.js';
 import { getMessagesApi } from '../api/messages.js';
 
 export default function Navbar({ title, subtitle, onSearch, searchValue = '' }) {
   const { user, logout } = useAuth();
+  const { toggleSidebar } = useSidebar();
   const navigate = useNavigate();
 
   // Profile Menu State
@@ -253,22 +256,33 @@ export default function Navbar({ title, subtitle, onSearch, searchValue = '' }) 
 
   return (
     <header className="navbar-header">
-      {/* Page Title & Breadcrumb */}
-      <div>
-        <h1
-          className="navbar-title"
-          style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em' }}
+      {/* Mobile Hamburger Toggle & Page Title */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button
+          type="button"
+          className="sidebar-toggle-btn"
+          onClick={toggleSidebar}
+          title="Toggle Navigation Menu"
         >
-          {title}
-        </h1>
-        {subtitle && (
-          <p
-            className="navbar-subtitle"
-            style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '2px' }}
+          <Menu size={20} />
+        </button>
+
+        <div>
+          <h1
+            className="navbar-title"
+            style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em' }}
           >
-            {subtitle}
-          </p>
-        )}
+            {title}
+          </h1>
+          {subtitle && (
+            <p
+              className="navbar-subtitle"
+              style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '2px' }}
+            >
+              {subtitle}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Right Controls: Search, Bell Notification, and User Profile */}
