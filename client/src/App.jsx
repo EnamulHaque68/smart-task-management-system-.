@@ -12,6 +12,13 @@ import Register from './pages/Register.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Projects from './pages/Projects.jsx';
 import Tasks from './pages/Tasks.jsx';
+import Analytics from './pages/Analytics.jsx';
+import TeamMembers from './pages/TeamMembers.jsx';
+import CalendarView from './pages/CalendarView.jsx';
+import Reports from './pages/Reports.jsx';
+import Messages from './pages/Messages.jsx';
+import Settings from './pages/Settings.jsx';
+import Support from './pages/Support.jsx';
 
 // Protected Route Guard
 function ProtectedRoute({ children }) {
@@ -68,7 +75,7 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public Auth Routes wrapped in AuthLayout (Matches Image 2 split screen) */}
+          {/* Public Auth Routes wrapped in AuthLayout */}
           <Route
             element={
               <PublicRoute>
@@ -80,7 +87,7 @@ export default function App() {
             <Route path="/register" element={<Register />} />
           </Route>
 
-          {/* Protected Application Routes inside MainLayout (Matches Image 4 dashboard) */}
+          {/* Protected Application Routes inside MainLayout */}
           <Route
             element={
               <ProtectedRoute>
@@ -91,6 +98,13 @@ export default function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/tasks" element={<Tasks />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/team" element={<TeamMembers />} />
+            <Route path="/calendar" element={<CalendarView />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/support" element={<Support />} />
           </Route>
 
           {/* Fallback Route: Redirect to dashboard or login */}

@@ -24,16 +24,16 @@ export default function Sidebar() {
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { label: 'Tasks', path: '/tasks', icon: CheckSquare },
     { label: 'Projects', path: '/projects', icon: FolderKanban },
-    { label: 'Analytics', path: '/analytics', icon: BarChart2, disabled: true },
-    { label: 'Calendar', path: '/calendar', icon: Calendar, disabled: true },
-    { label: 'Team Members', path: '/team', icon: Users, disabled: true },
-    { label: 'Reports', path: '/reports', icon: FileText, disabled: true },
-    { label: 'Messages', path: '/messages', icon: MessageSquare, badge: '5', disabled: true },
+    { label: 'Analytics', path: '/analytics', icon: BarChart2 },
+    { label: 'Calendar', path: '/calendar', icon: Calendar },
+    { label: 'Team Members', path: '/team', icon: Users },
+    { label: 'Reports', path: '/reports', icon: FileText },
+    { label: 'Messages', path: '/messages', icon: MessageSquare, badge: '5' },
   ];
 
   const generalItems = [
-    { label: 'Settings', path: '/settings', icon: Settings, disabled: true },
-    { label: 'Help & Support', path: '/support', icon: HelpCircle, disabled: true },
+    { label: 'Settings', path: '/settings', icon: Settings },
+    { label: 'Help & Support', path: '/support', icon: HelpCircle },
   ];
 
   return (
@@ -50,7 +50,7 @@ export default function Sidebar() {
       userSelect: 'none',
       zIndex: 100,
     }}>
-      {/* Brand Header (Matches Image 4) */}
+      {/* Brand Header */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -90,42 +90,6 @@ export default function Sidebar() {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           {navItems.map((item) => {
             const Icon = item.icon;
-            if (item.disabled) {
-              return (
-                <div
-                  key={item.label}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '10px 12px',
-                    borderRadius: '10px',
-                    color: '#94a3b8',
-                    fontSize: '0.9rem',
-                    fontWeight: '500',
-                    cursor: 'default',
-                    opacity: 0.7,
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Icon size={18} />
-                    <span>{item.label}</span>
-                  </div>
-                  {item.badge && (
-                    <span style={{
-                      backgroundColor: '#ef4444',
-                      color: '#ffffff',
-                      fontSize: '0.7rem',
-                      fontWeight: '700',
-                      padding: '2px 6px',
-                      borderRadius: '9999px',
-                    }}>
-                      {item.badge}
-                    </span>
-                  )}
-                </div>
-              );
-            }
 
             return (
               <NavLink
@@ -146,10 +110,24 @@ export default function Sidebar() {
                 })}
               >
                 {({ isActive }) => (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Icon size={18} color={isActive ? '#2563eb' : '#64748b'} />
-                    <span>{item.label}</span>
-                  </div>
+                  <>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <Icon size={18} color={isActive ? '#2563eb' : '#64748b'} />
+                      <span>{item.label}</span>
+                    </div>
+                    {item.badge && (
+                      <span style={{
+                        backgroundColor: '#ef4444',
+                        color: '#ffffff',
+                        fontSize: '0.7rem',
+                        fontWeight: '700',
+                        padding: '2px 7px',
+                        borderRadius: '9999px',
+                      }}>
+                        {item.badge}
+                      </span>
+                    )}
+                  </>
                 )}
               </NavLink>
             );
@@ -165,24 +143,30 @@ export default function Sidebar() {
           {generalItems.map((item) => {
             const Icon = item.icon;
             return (
-              <div
-                key={item.label}
-                style={{
+              <NavLink
+                key={item.path}
+                to={item.path}
+                style={({ isActive }) => ({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '12px',
                   padding: '10px 12px',
                   borderRadius: '10px',
-                  color: '#94a3b8',
+                  color: isActive ? '#2563eb' : '#475569',
+                  backgroundColor: isActive ? '#eff6ff' : 'transparent',
                   fontSize: '0.9rem',
-                  fontWeight: '500',
-                  cursor: 'default',
-                  opacity: 0.7,
-                }}
+                  fontWeight: isActive ? '700' : '500',
+                  transition: 'all 0.15s ease',
+                  textDecoration: 'none',
+                })}
               >
-                <Icon size={18} />
-                <span>{item.label}</span>
-              </div>
+                {({ isActive }) => (
+                  <>
+                    <Icon size={18} color={isActive ? '#2563eb' : '#64748b'} />
+                    <span>{item.label}</span>
+                  </>
+                )}
+              </NavLink>
             );
           })}
 
@@ -202,6 +186,7 @@ export default function Sidebar() {
               width: '100%',
               transition: 'background-color 0.15s ease',
               marginTop: '4px',
+              cursor: 'pointer',
             }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fef2f2'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -212,7 +197,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Upgrade to Pro Card (Matches Image 4) */}
+      {/* Upgrade to Pro Card */}
       <div style={{
         marginTop: '1rem',
         padding: '1.25rem',
@@ -238,9 +223,10 @@ export default function Sidebar() {
           Upgrade to Pro
         </div>
         <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', lineHeight: 1.4 }}>
-          Unlock advanced analytics and manage unlimited properties.
+          Unlock advanced analytics and manage unlimited projects.
         </p>
         <button
+          onClick={() => alert('Upgrade to Pro simulated for Bright Mind Ltd')}
           style={{
             marginTop: '10px',
             width: '100%',
@@ -251,6 +237,7 @@ export default function Sidebar() {
             fontSize: '0.8rem',
             fontWeight: '600',
             boxShadow: '0 4px 10px rgba(37, 99, 235, 0.25)',
+            cursor: 'pointer',
           }}
         >
           Upgrade Now
