@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { getDashboardApi } from '../api/dashboard.js';
 import Navbar from '../components/Navbar.jsx';
 import ProgressBar from '../components/ProgressBar.jsx';
+import PieChart from '../components/PieChart.jsx';
+import HistogramChart from '../components/HistogramChart.jsx';
+import OgiveCurveChart from '../components/OgiveCurveChart.jsx';
 import {
   BarChart2,
   TrendingUp,
@@ -104,7 +107,23 @@ export default function Analytics() {
               </div>
             </div>
 
-            {/* Breakdown Visuals */}
+            {/* Visual Charts Grid: Pie Chart & Histogram */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+              gap: '1.5rem',
+            }}>
+              {/* Interactive Pie Chart */}
+              <PieChart data={data} />
+
+              {/* Interactive Histogram */}
+              <HistogramChart data={data} />
+            </div>
+
+            {/* Ogive Curve (Cumulative Frequency / S-Curve) */}
+            <OgiveCurveChart data={data} />
+
+            {/* Linear Progress Breakdown Visuals */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
@@ -113,7 +132,7 @@ export default function Analytics() {
               {/* Status Breakdown Card */}
               <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '1.75rem', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', marginBottom: '1.25rem' }}>
-                  Task Status Distribution
+                  Task Status Distribution Bars
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   <div>
@@ -151,7 +170,7 @@ export default function Analytics() {
               {/* Priority Breakdown Card */}
               <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '1.75rem', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', marginBottom: '1.25rem' }}>
-                  Task Priority Breakdown
+                  Task Priority Breakdown Bars
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   <div>
