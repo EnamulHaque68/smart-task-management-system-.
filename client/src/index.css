@@ -107,3 +107,126 @@ a {
   background: #94a3b8;
 }
 
+@keyframes pulseBadge {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Responsive Navbar & Notification Styles */
+.navbar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 2rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+.navbar-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #f8fafc;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  padding: 6px 14px;
+  width: 240px;
+  transition: width 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.navbar-search-box:focus-within {
+  border-color: #93c5fd;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.navbar-user-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+/* Responsive Notification Popover */
+.notification-popover {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: -50px;
+  width: 390px;
+  max-width: 92vw;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.22), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+  border: 1px solid #e2e8f0;
+  z-index: 110;
+  animation: fadeIn 0.15s ease-out;
+  overflow: hidden;
+}
+
+.notification-mobile-backdrop {
+  display: none;
+}
+
+/* Tablet Breakpoint (<= 768px) */
+@media (max-width: 768px) {
+  .navbar-header {
+    padding: 0.85rem 1.25rem;
+  }
+  .navbar-search-box {
+    width: 170px;
+  }
+}
+
+/* Mobile Breakpoint (<= 640px) */
+@media (max-width: 640px) {
+  .navbar-header {
+    padding: 0.75rem 0.85rem;
+  }
+  .navbar-title {
+    font-size: 1.15rem !important;
+  }
+  .navbar-subtitle {
+    display: none !important;
+  }
+  .navbar-search-box {
+    width: 120px;
+    padding: 5px 10px;
+  }
+  .navbar-search-box input {
+    font-size: 0.78rem;
+  }
+  .navbar-user-text {
+    display: none !important;
+  }
+  
+  .notification-mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(3px);
+    z-index: 998;
+  }
+  
+  .notification-popover {
+    position: fixed !important;
+    top: 60px !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: 84vh !important;
+    z-index: 999 !important;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35) !important;
+  }
+}
+
