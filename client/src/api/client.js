@@ -1,6 +1,7 @@
 // Centralized API Client with JWT Bearer Token Injection
 
-const BASE_URL = '/api';
+const API_ORIGIN = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : '';
+const BASE_URL = API_ORIGIN ? `${API_ORIGIN}/api` : '/api';
 
 export async function apiClient(endpoint, { body, ...customConfig } = {}) {
   const token = localStorage.getItem('taskflow_token');

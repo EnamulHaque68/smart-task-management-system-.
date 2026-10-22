@@ -6,16 +6,32 @@ dotenv.config();
 const { Pool } = pg;
 
 // PostgreSQL Connection Pool Configuration
-export const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'bright_mind_db',
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
-});
+const isProduction = process.env.NODE_ENV === 'production';
+const hasDbUrl = Boolean(process.env.DATABASE_URL);
+
+export const pool = new Pool(
+  hasDbUrl
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: isProduction || process.env.DATABASE_URL?.includes('sslmode=require')
+          ? { rejectUnauthorized: false }
+          : false,
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+      }
+    : {
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT || '5432', 10),
+        user: process.env.DB_USER || 'postgres',
+        password: process.env.DB_PASSWORD || '',
+        database: process.env.DB_NAME || 'bright_mind_db',
+        ssl: isProduction ? { rejectUnauthorized: false } : false,
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+      }
+);
 
 pool.on('error', (err) => {
   console.error('[PostgreSQL Pool Error]: Unexpected client error', err);

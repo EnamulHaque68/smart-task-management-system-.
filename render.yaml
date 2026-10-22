@@ -1,0 +1,28 @@
+services:
+  # Express Backend Web Service
+  - type: web
+    name: taskflow-server
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: taskflow-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+
+databases:
+  # Managed PostgreSQL Database
+  - name: taskflow-db
+    databaseName: bright_mind_db
+    user: postgres
+    plan: free
