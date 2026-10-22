@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js",
+    "dev": "node --watch-path=src src/server.js",
     "migrate": "node migrations/run-migrations.js",
     "seed": "node seeds/run-seeds.js",
     "test": "node test/phase9_integration_test.js"

@@ -253,10 +253,8 @@ export default function Sidebar() {
             })}
           </nav>
 
-          {/* General Nav Section */}
-          <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0 0.75rem', marginTop: '1.75rem', marginBottom: '0.75rem' }}>
-            General
-          </div>
+          {/* Section Divider */}
+          <div style={{ height: '1px', backgroundColor: '#e2e8f0', margin: '1.25rem 0.5rem 0.75rem' }} />
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {generalItems.map((item) => {

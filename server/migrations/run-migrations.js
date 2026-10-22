@@ -67,7 +67,8 @@ async function runMigrations() {
       '001_create_users_table.sql',
       '002_create_projects_table.sql',
       '003_create_tasks_table.sql',
-      '004_create_messages_table.sql'
+      '004_create_messages_table.sql',
+      '005_add_profile_fields_to_users.sql'
     ];
 
     for (const file of migrationFiles) {

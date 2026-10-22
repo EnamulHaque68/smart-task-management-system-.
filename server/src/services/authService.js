@@ -50,11 +50,21 @@ export const registerUser = async ({ name, email, password }) => {
   const avatarColor = getRandomAvatarColor();
 
   // Insert new user
+  const defaultPrefs = {
+    email_notifications: true,
+    task_assigned_alert: true,
+    due_date_reminders: true,
+    timezone: 'Asia/Dhaka',
+    date_format: 'YYYY-MM-DD',
+    language: 'en',
+    theme: 'light',
+  };
+
   const insertRes = await query(
-    `INSERT INTO users (name, email, password, avatar_color, role)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, name, email, avatar_color, role, created_at;`,
-    [name.trim(), normalizedEmail, hashedPassword, avatarColor, 'user']
+    `INSERT INTO users (name, email, password, avatar_color, role, phone, job_title, preferences)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+     RETURNING id, name, email, avatar_color, role, phone, job_title, preferences, created_at;`,
+    [name.trim(), normalizedEmail, hashedPassword, avatarColor, 'user', '', 'Team Member', defaultPrefs]
   );
 
   const newUser = insertRes.rows[0];
@@ -72,7 +82,7 @@ export const loginUser = async ({ email, password }) => {
 
   // Find user by email
   const userRes = await query(
-    `SELECT id, name, email, password, avatar_color, role, created_at 
+    `SELECT id, name, email, password, avatar_color, role, phone, job_title, preferences, avatar_url, created_at 
      FROM users 
      WHERE email = $1;`,
     [normalizedEmail]
@@ -109,7 +119,7 @@ export const loginUser = async ({ email, password }) => {
 // Get User Profile By ID
 export const getUserById = async (id) => {
   const userRes = await query(
-    `SELECT id, name, email, avatar_color, role, created_at 
+    `SELECT id, name, email, avatar_color, role, phone, job_title, preferences, avatar_url, created_at, updated_at 
      FROM users 
      WHERE id = $1;`,
     [id]
@@ -124,10 +134,82 @@ export const getUserById = async (id) => {
   return userRes.rows[0];
 };
 
+// Update User Profile & Preferences
+export const updateProfile = async (userId, data) => {
+  const { name, phone, job_title, avatar_color, avatar_url, preferences } = data;
+
+  const userRes = await query('SELECT * FROM users WHERE id = $1', [userId]);
+  if (userRes.rowCount === 0) {
+    const error = new Error('User not found');
+    error.statusCode = 404;
+    throw error;
+  }
+  const current = userRes.rows[0];
+
+  const updatedName = name !== undefined ? name.trim() : current.name;
+  const updatedPhone = phone !== undefined ? phone.trim() : (current.phone || '');
+  const updatedJobTitle = job_title !== undefined ? job_title.trim() : (current.job_title || 'Team Member');
+  const updatedAvatarColor = avatar_color !== undefined ? avatar_color : current.avatar_color;
+  const updatedAvatarUrl = avatar_url !== undefined ? avatar_url : (current.avatar_url || '/avatars/alex_morgan.jpg');
+
+  let mergedPreferences = current.preferences || {};
+  if (preferences) {
+    const parsed = typeof preferences === 'string' ? JSON.parse(preferences) : preferences;
+    mergedPreferences = { ...mergedPreferences, ...parsed };
+  }
+
+  const result = await query(
+    `UPDATE users 
+     SET name = $1, phone = $2, job_title = $3, avatar_color = $4, avatar_url = $5, preferences = $6, updated_at = NOW()
+     WHERE id = $7
+     RETURNING id, name, email, avatar_color, role, phone, job_title, preferences, avatar_url, created_at, updated_at;`,
+    [updatedName, updatedPhone, updatedJobTitle, updatedAvatarColor, updatedAvatarUrl, mergedPreferences, userId]
+  );
+
+  return result.rows[0];
+};
+
+// Change Password Service
+export const changePassword = async (userId, { currentPassword, newPassword }) => {
+  if (!currentPassword || !newPassword) {
+    const error = new Error('Current password and new password are required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (newPassword.length < 6) {
+    const error = new Error('New password must be at least 6 characters long');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const userRes = await query('SELECT password FROM users WHERE id = $1', [userId]);
+  if (userRes.rowCount === 0) {
+    const error = new Error('User not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const user = userRes.rows[0];
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    const error = new Error('Current password is incorrect');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  await query('UPDATE users SET password = $1, updated_at = NOW() WHERE id = $2', [hashedPassword, userId]);
+
+  return { message: 'Password updated successfully' };
+};
+
 // Get All Users (for task assignment)
 export const getAllUsers = async () => {
   const result = await query(
-    `SELECT id, name, email, avatar_color, role, created_at 
+    `SELECT id, name, email, avatar_color, role, phone, job_title, created_at 
      FROM users 
      ORDER BY name ASC;`
   );
@@ -139,5 +221,7 @@ export default {
   registerUser,
   loginUser,
   getUserById,
+  updateProfile,
+  changePassword,
   getAllUsers,
 };

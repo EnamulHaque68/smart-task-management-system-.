@@ -259,8 +259,8 @@ export const updateTask = async (taskId, userId, updateData) => {
     depends_on_task_id,
   } = updateData;
 
-  const assignedTo = updateData.assigned_to !== undefined 
-    ? updateData.assigned_to 
+  const assignedTo = updateData.assigned_to !== undefined
+    ? updateData.assigned_to
     : (updateData.assigneeId !== undefined ? updateData.assigneeId : undefined);
 
   let newAssigneeName = existingTask.assignee_name;

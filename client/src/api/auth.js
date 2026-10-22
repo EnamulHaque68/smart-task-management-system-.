@@ -16,9 +16,19 @@ export const getUsersApi = async () => {
   return apiClient('/auth/users');
 };
 
+export const updateProfileApi = async (profileData) => {
+  return apiClient('/auth/profile', { method: 'PUT', body: profileData });
+};
+
+export const changePasswordApi = async (passwordData) => {
+  return apiClient('/auth/change-password', { method: 'PUT', body: passwordData });
+};
+
 export default {
   loginApi,
   registerApi,
   getMeApi,
   getUsersApi,
+  updateProfileApi,
+  changePasswordApi,
 };

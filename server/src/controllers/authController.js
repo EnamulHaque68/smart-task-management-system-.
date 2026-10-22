@@ -61,9 +61,41 @@ export const getUsers = async (req, res, next) => {
   }
 };
 
+// PUT /api/auth/profile (Protected Route)
+export const updateProfile = async (req, res, next) => {
+  try {
+    const updatedUser = await authService.updateProfile(req.user.id, req.body);
+    return res.status(200).json({
+      status: 'success',
+      message: 'Profile updated successfully',
+      data: {
+        user: updatedUser,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PUT /api/auth/change-password (Protected Route)
+export const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const result = await authService.changePassword(req.user.id, { currentPassword, newPassword });
+    return res.status(200).json({
+      status: 'success',
+      message: result.message,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   login,
   getMe,
   getUsers,
+  updateProfile,
+  changePassword,
 };

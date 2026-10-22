@@ -30,7 +30,7 @@ export const authenticate = async (req, res, next) => {
 
     // Verify user still exists in database
     const userRes = await query(
-      `SELECT id, name, email, avatar_color, role, created_at 
+      `SELECT id, name, email, avatar_color, role, phone, job_title, preferences, avatar_url, created_at 
        FROM users 
        WHERE id = $1;`,
       [decoded.id]
