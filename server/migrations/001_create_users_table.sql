@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     avatar_color VARCHAR(20) DEFAULT '#2563eb',
     role VARCHAR(50) DEFAULT 'user',
+    avatar_url TEXT DEFAULT '/avatars/alex_morgan.jpg',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

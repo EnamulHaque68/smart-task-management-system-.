@@ -57,12 +57,13 @@ export async function initializeDatabase() {
         console.log('   ✅ Initial users, projects, and tasks seeded.');
       }
     } else {
-      // Ensure migration 005 (profile and preferences columns) exists
-      const migration5Path = path.join(migrationsDir, '005_add_profile_fields_to_users.sql');
-      if (fs.existsSync(migration5Path)) {
-        const sql = fs.readFileSync(migration5Path, 'utf8');
-        await pool.query(sql);
-      }
+      // Ensure profile and preferences columns exist (including avatar_url)
+      await pool.query(`
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(50) DEFAULT '';
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS job_title VARCHAR(100) DEFAULT 'Product Lead';
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS preferences JSONB DEFAULT '{"email_notifications": true, "task_assigned_alert": true, "due_date_reminders": true, "timezone": "Asia/Dhaka", "date_format": "YYYY-MM-DD", "language": "en", "theme": "light"}';
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT '/avatars/alex_morgan.jpg';
+      `);
 
       // Check if users table is empty
       const countRes = await pool.query('SELECT COUNT(*) FROM users;');
