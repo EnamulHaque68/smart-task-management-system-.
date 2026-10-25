@@ -45,10 +45,9 @@ git push -u origin main
    - `JWT_EXPIRES_IN` = `7d`
    - `CLIENT_URL` = `*` *(or your Vercel URL once deployed)*
 5. Click **Deploy Web Service**.
-6. Once deployed, run the database migrations:
-   - Go to the **Shell** tab in your Render Web Service.
-   - Run: `node migrations/run-migrations.js`
-   - Run: `node seeds/run-seeds.js`
+6. **Database Tables Auto-Initialize:**
+   - The server is built to automatically detect missing tables and execute migrations & seed demo data on first startup!
+   - Alternatively, if using **Neon PostgreSQL** (console.neon.tech), you can open the **SQL Editor** in Neon and paste the contents of `server/migrations/neon_complete_setup.sql`, then click **Run**.
 7. Copy your backend live URL (e.g. `https://taskflow-server-xxxx.onrender.com`).
 
 ---
