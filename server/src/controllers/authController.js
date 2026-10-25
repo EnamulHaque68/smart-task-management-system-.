@@ -91,6 +91,20 @@ export const changePassword = async (req, res, next) => {
   }
 };
 
+// POST /api/auth/reset-password (Public Forgot Password Route)
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { email, newPassword } = req.body;
+    const result = await authService.resetPasswordByEmail({ email, newPassword });
+    return res.status(200).json({
+      status: 'success',
+      message: result.message,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   login,
@@ -98,4 +112,5 @@ export default {
   getUsers,
   updateProfile,
   changePassword,
+  resetPassword,
 };

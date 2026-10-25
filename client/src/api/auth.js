@@ -24,6 +24,10 @@ export const changePasswordApi = async (passwordData) => {
   return apiClient('/auth/change-password', { method: 'PUT', body: passwordData });
 };
 
+export const resetPasswordApi = async (resetData) => {
+  return apiClient('/auth/reset-password', { body: resetData });
+};
+
 export default {
   loginApi,
   registerApi,
@@ -31,4 +35,5 @@ export default {
   getUsersApi,
   updateProfileApi,
   changePasswordApi,
+  resetPasswordApi,
 };

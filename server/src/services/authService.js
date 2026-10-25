@@ -206,6 +206,40 @@ export const changePassword = async (userId, { currentPassword, newPassword }) =
   return { message: 'Password updated successfully' };
 };
 
+// Reset Password by Email (Forgot Password feature)
+export const resetPasswordByEmail = async ({ email, newPassword }) => {
+  if (!email || !newPassword) {
+    const error = new Error('Email and new password are required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (newPassword.length < 6) {
+    const error = new Error('New password must be at least 6 characters long');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const normalizedEmail = email.toLowerCase().trim();
+  const userRes = await query('SELECT id, name FROM users WHERE email = $1', [normalizedEmail]);
+
+  if (userRes.rowCount === 0) {
+    const error = new Error('No user account found with this email address');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  await query('UPDATE users SET password = $1, updated_at = NOW() WHERE email = $2', [
+    hashedPassword,
+    normalizedEmail,
+  ]);
+
+  return { message: 'Password reset successful! You can now log in with your new password.' };
+};
+
 // Get All Users (for task assignment)
 export const getAllUsers = async () => {
   const result = await query(
@@ -223,5 +257,6 @@ export default {
   getUserById,
   updateProfile,
   changePassword,
+  resetPasswordByEmail,
   getAllUsers,
 };
