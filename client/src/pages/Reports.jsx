@@ -227,7 +227,7 @@ export default function Reports() {
             >
               <img
                 src="/avatars/alex_morgan.jpg"
-                alt="Alex Morgan"
+                alt="Tanvir Ahmed"
                 style={{
                   width: '38px',
                   height: '38px',
@@ -241,7 +241,7 @@ export default function Reports() {
               />
               <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
                 <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.2 }}>
-                  Alex Morgan
+                  Tanvir Ahmed
                 </span>
                 <span style={{ fontSize: '0.72rem', color: '#64748b', lineHeight: 1.2 }}>
                   demo@brightmind.com

@@ -65,6 +65,24 @@ export async function initializeDatabase() {
         ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT '/avatars/alex_morgan.jpg';
       `);
 
+      // Update existing demo and team names to Bangladeshi names
+      await pool.query(`
+        UPDATE users SET name = 'Tanvir Ahmed', job_title = 'Lead Product Manager' WHERE id = 1 AND name = 'Alex Morgan';
+        UPDATE users SET name = 'Nusrat Jahan', job_title = 'Lead UI/UX Designer' WHERE id = 2 AND name = 'Sarah Wilson';
+        UPDATE users SET name = 'Mahmudul Hasan', job_title = 'Senior Backend Engineer' WHERE id = 3 AND name = 'Mike Fisher';
+        UPDATE users SET name = 'Sabbir Rahman', job_title = 'Full-Stack Developer' WHERE id = 4 AND name = 'John Doe';
+
+        UPDATE tasks SET assignee_name = 'Nusrat Jahan' WHERE assigned_to = 2 AND assignee_name = 'Sarah Wilson';
+        UPDATE tasks SET assignee_name = 'Mahmudul Hasan' WHERE assigned_to = 3 AND assignee_name = 'Mike Fisher';
+        UPDATE tasks SET assignee_name = 'Sabbir Rahman' WHERE assigned_to = 4 AND assignee_name = 'John Doe';
+        UPDATE tasks SET assignee_name = 'Tanvir Ahmed' WHERE assigned_to = 1 AND assignee_name = 'Alex Morgan';
+
+        UPDATE messages SET sender_name = 'Nusrat Jahan' WHERE user_id = 2 AND sender_name = 'Sarah Wilson';
+        UPDATE messages SET sender_name = 'Mahmudul Hasan' WHERE user_id = 3 AND sender_name = 'Mike Fisher';
+        UPDATE messages SET sender_name = 'Sabbir Rahman' WHERE user_id = 4 AND sender_name = 'John Doe';
+        UPDATE messages SET sender_name = 'Tanvir Ahmed' WHERE user_id = 1 AND sender_name = 'Alex Morgan';
+      `);
+
       // Check if users table is empty
       const countRes = await pool.query('SELECT COUNT(*) FROM users;');
       const userCount = parseInt(countRes.rows[0]?.count || '0', 10);

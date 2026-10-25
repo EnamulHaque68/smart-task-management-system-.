@@ -501,7 +501,7 @@ export default function AuthLayout() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <img
                 src="/avatars/alex_morgan.jpg"
-                alt="Alex Morgan"
+                alt="Tanvir Ahmed"
                 style={{
                   width: '32px',
                   height: '32px',
@@ -515,7 +515,7 @@ export default function AuthLayout() {
               />
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.15 }}>
-                  Alex Morgan
+                  Tanvir Ahmed
                 </span>
                 <span style={{ fontSize: '0.7rem', color: '#64748b', lineHeight: 1.15 }}>
                   Lead Product Manager

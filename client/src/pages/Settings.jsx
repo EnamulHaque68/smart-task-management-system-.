@@ -81,18 +81,18 @@ export default function Settings() {
     user?.preferences?.default_view || 'kanban'
   );
 
-  // Profile Form State (defaulted to Alex Morgan / screenshot details)
-  const [name, setName] = useState(user?.name || 'Alex Morgan');
+  // Profile Form State (defaulted to Tanvir Ahmed / Bangladesh details)
+  const [name, setName] = useState(user?.name || 'Tanvir Ahmed');
   const [jobTitle, setJobTitle] = useState(user?.job_title || 'Lead Product Manager');
-  const [phone, setPhone] = useState(user?.phone || '+1 415 555 0187');
+  const [phone, setPhone] = useState(user?.phone || '+880 1711-000111');
   const [companyName, setCompanyName] = useState(
     user?.preferences?.company_name || 'Bright Mind Ltd'
   );
   const [location, setLocation] = useState(
-    user?.preferences?.location || 'San Francisco, CA, USA'
+    user?.preferences?.location || 'Dhaka, Bangladesh'
   );
   const [linkedin, setLinkedin] = useState(
-    user?.preferences?.linkedin || 'https://www.linkedin.com/in/alexmorgan'
+    user?.preferences?.linkedin || 'https://www.linkedin.com/in/tanvirahmed'
   );
   const [website, setWebsite] = useState(
     user?.preferences?.website || 'https://www.brightmind.com'
@@ -138,9 +138,9 @@ export default function Settings() {
   // Sync state if user prop changes
   useEffect(() => {
     if (user) {
-      setName(user.name || 'Alex Morgan');
+      setName(user.name || 'Tanvir Ahmed');
       setJobTitle(user.job_title || 'Lead Product Manager');
-      setPhone(user.phone || '+1 415 555 0187');
+      setPhone(user.phone || '+880 1711-000111');
       setAvatarColor(user.avatar_color || '#ec4899');
       setAvatarUrl(user.avatar_url || user.preferences?.avatar_url || '/avatars/alex_morgan.jpg');
       if (user.preferences) {
@@ -786,7 +786,7 @@ export default function Settings() {
                   </div>
 
                   <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', margin: '0 0 2px 0' }}>
-                    {name || 'Alex Morgan'}
+                    {name || 'Tanvir Ahmed'}
                   </h3>
                   <div style={{ fontSize: '0.875rem', color: '#64748b', fontWeight: '500', marginBottom: '4px' }}>
                     {jobTitle || 'Lead Product Manager'}

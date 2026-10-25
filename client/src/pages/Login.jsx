@@ -323,7 +323,7 @@ export default function Login() {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <ShieldCheck size={15} color="#2563eb" />
-              <span>Log in as Alex Morgan (Admin / Lead)</span>
+              <span>Log in as Tanvir Ahmed (Admin / Lead)</span>
             </div>
             <ArrowRight size={13} />
           </button>
@@ -352,7 +352,7 @@ export default function Login() {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <User size={15} color="#10b981" />
-              <span>Log in as Sarah Wilson (Team Member)</span>
+              <span>Log in as Nusrat Jahan (Team Member)</span>
             </div>
             <ArrowRight size={13} color="#10b981" />
           </button>
@@ -1031,11 +1031,11 @@ export default function Login() {
                       fontSize: '0.8rem',
                     }}
                   >
-                    AM
+                    TA
                   </div>
                   <div>
                     <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#0f172a' }}>
-                      Alex Morgan (Admin / Lead)
+                      Tanvir Ahmed (Admin / Lead)
                     </div>
                     <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
                       demo@brightmind.com • Connected via {socialModal.provider}
@@ -1045,7 +1045,7 @@ export default function Login() {
                 <ArrowRight size={15} color="#2563eb" />
               </button>
 
-              {/* Account 2: Sarah Wilson */}
+              {/* Account 2: Nusrat Jahan */}
               <button
                 type="button"
                 disabled={instantLoginLoading}
@@ -1089,11 +1089,11 @@ export default function Login() {
                       fontSize: '0.8rem',
                     }}
                   >
-                    SW
+                    NJ
                   </div>
                   <div>
                     <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#0f172a' }}>
-                      Sarah Wilson (Team Member)
+                      Nusrat Jahan (Team Member)
                     </div>
                     <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
                       sarah.wilson@brightmind.com • Connected via {socialModal.provider}
